@@ -494,6 +494,13 @@ Format as clean Markdown with headers, tables, and code blocks. Use triple backt
           )}
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="text-center py-6 border-t border-[var(--border)]">
+        <p className="text-[11px] text-[var(--text-muted)]">
+          APISmith — Documented by MiMo v2.5 Pro
+        </p>
+      </footer>
     </div>
   );
 }
