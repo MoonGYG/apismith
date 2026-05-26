@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚡ APISmith
 
-## Getting Started
+Stop writing API docs by hand. APISmith takes your endpoints — method, path, headers, body, response — and generates full Markdown documentation with curl examples, error codes, and rate limiting info.
 
-First, run the development server:
+![APISmith](proof/commit-log.png)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## The workflow
+
+```
+1. Define your endpoints in the visual builder
+2. Add headers, request body, response examples
+3. Hit "Generate Docs"
+4. Get structured API documentation in seconds
+5. Copy or export as .md file
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Built-in features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Endpoint builder with method selector (GET/POST/PUT/DELETE/PATCH)
+- Header management (key-value pairs)
+- Request/response JSON editors
+- AI-generated documentation with:
+  - Overview + authentication section
+  - Per-endpoint descriptions with parameters
+  - Curl examples
+  - Error response codes
+  - Rate limiting documentation
+- One-click copy & Markdown export
+- Sample API loader for quick demo
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Stack
 
-## Learn More
+Next.js 16 · Tailwind CSS 4 · TypeScript · MiMo v2.5 Pro
 
-To learn more about Next.js, take a look at the following resources:
+## Run it
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+# optional: set MIMO_API_URL and MIMO_API_KEY in .env.local
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## File structure
 
-## Deploy on Vercel
+```
+src/
+├── app/
+│   ├── api/generate/route.ts     # Documentation generation
+│   ├── page.tsx                  # Two-panel builder UI
+│   ├── globals.css               # Dark crimson theme
+│   └── layout.tsx
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Theme
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Dark mode with crimson red accents (#dc2626). System monospace fonts, "SYSTEM ONLINE" status indicator, red glow effects. Designed to feel like a developer dashboard.
+
+---
+
+Powered by **MiMo v2.5 Pro** from Xiaomi. [Learn more →](https://huggingface.co/XiaomiMiMo)
+
+*Crafted with MiMo v2.5 Pro*
+
+MIT License
