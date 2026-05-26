@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useRef, useState } from "react";
 
 interface Header {
   key: string;
@@ -60,6 +60,164 @@ const SAMPLE_ENDPOINTS: Endpoint[] = [
   },
 ];
 
+const SAMPLE_TASK_ENDPOINTS: Endpoint[] = [
+  {
+    id: 101,
+    method: "GET",
+    path: "/api/tasks",
+    description: "Retrieve all tasks with optional filtering",
+    headers: [{ key: "Authorization", value: "Bearer <token>" }],
+    body: "",
+    response: '{\n  "tasks": [\n    { "id": 1, "title": "Buy groceries", "completed": false, "created_at": "2026-05-26T10:00:00Z" },\n    { "id": 2, "title": "Write report", "completed": true, "created_at": "2026-05-25T08:30:00Z" }\n  ],\n  "total": 2\n}',
+  },
+  {
+    id: 102,
+    method: "POST",
+    path: "/api/tasks",
+    description: "Create a new task",
+    headers: [
+      { key: "Authorization", value: "Bearer <token>" },
+      { key: "Content-Type", value: "application/json" },
+    ],
+    body: '{\n  "title": "Buy groceries",\n  "description": "Milk, eggs, bread",\n  "priority": "high"\n}',
+    response: '{\n  "id": 3,\n  "title": "Buy groceries",\n  "description": "Milk, eggs, bread",\n  "priority": "high",\n  "completed": false,\n  "created_at": "2026-05-26T12:00:00Z"\n}',
+  },
+  {
+    id: 103,
+    method: "DELETE",
+    path: "/api/tasks/:id",
+    description: "Delete a task by ID",
+    headers: [{ key: "Authorization", value: "Bearer <token>" }],
+    body: "",
+    response: '{\n  "message": "Task deleted successfully",\n  "id": 3\n}',
+  },
+];
+
+const SAMPLE_TASK_DOCS = `# Task Manager API
+
+RESTful API for managing tasks with CRUD operations.
+
+**Base URL:** \`https://api.example.com\`
+
+---
+
+## Authentication
+
+All endpoints require a Bearer token in the \`Authorization\` header.
+
+\`\`\`
+Authorization: Bearer <your-token>
+\`\`\`
+
+---
+
+## Endpoints
+
+### GET /api/tasks
+
+Retrieve all tasks with optional filtering.
+
+**Request**
+
+\`\`\`bash
+curl -X GET https://api.example.com/api/tasks \\
+  -H "Authorization: Bearer <token>"
+\`\`\`
+
+**Response** \`200 OK\`
+
+\`\`\`json
+{
+  "tasks": [
+    { "id": 1, "title": "Buy groceries", "completed": false, "created_at": "2026-05-26T10:00:00Z" },
+    { "id": 2, "title": "Write report", "completed": true, "created_at": "2026-05-25T08:30:00Z" }
+  ],
+  "total": 2
+}
+\`\`\`
+
+---
+
+### POST /api/tasks
+
+Create a new task.
+
+**Request Body**
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| title | string | Yes | Task title |
+| description | string | No | Task description |
+| priority | string | No | Priority level: low, medium, high |
+
+**Request**
+
+\`\`\`bash
+curl -X POST https://api.example.com/api/tasks \\
+  -H "Authorization: Bearer <token>" \\
+  -H "Content-Type: application/json" \\
+  -d '{"title": "Buy groceries", "description": "Milk, eggs, bread", "priority": "high"}'
+\`\`\`
+
+**Response** \`201 Created\`
+
+\`\`\`json
+{
+  "id": 3,
+  "title": "Buy groceries",
+  "description": "Milk, eggs, bread",
+  "priority": "high",
+  "completed": false,
+  "created_at": "2026-05-26T12:00:00Z"
+}
+\`\`\`
+
+---
+
+### DELETE /api/tasks/:id
+
+Delete a task by ID.
+
+**Path Parameters**
+
+| Parameter | Type | Description |
+|---|---|---|
+| id | integer | The task ID to delete |
+
+**Request**
+
+\`\`\`bash
+curl -X DELETE https://api.example.com/api/tasks/3 \\
+  -H "Authorization: Bearer <token>"
+\`\`\`
+
+**Response** \`200 OK\`
+
+\`\`\`json
+{
+  "message": "Task deleted successfully",
+  "id": 3
+}
+\`\`\`
+
+---
+
+## Error Responses
+
+| Status | Description |
+|---|---|
+| 400 | Bad Request — Invalid input |
+| 401 | Unauthorized — Missing or invalid token |
+| 404 | Not Found — Task does not exist |
+| 500 | Internal Server Error |
+
+---
+
+## Rate Limiting
+
+- 100 requests per minute per API key
+- Exceeding the limit returns \`429 Too Many Requests\``;
+
 export default function Home() {
   const [endpoints, setEndpoints] = useState<Endpoint[]>([]);
   const [currentMethod, setCurrentMethod] = useState("GET");
@@ -74,6 +232,7 @@ export default function Home() {
   const [projectDesc, setProjectDesc] = useState("A RESTful API service");
   const [showDocs, setShowDocs] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
+  const nextEndpointId = useRef(SAMPLE_ENDPOINTS.length + 1);
 
   const addHeader = () => {
     setCurrentHeaders([...currentHeaders, { key: "", value: "" }]);
@@ -95,7 +254,7 @@ export default function Home() {
     if (!currentPath.trim()) return;
 
     const newEndpoint: Endpoint = {
-      id: Date.now(),
+      id: nextEndpointId.current++,
       method: currentMethod,
       path: currentPath,
       description: currentDesc,
@@ -141,6 +300,14 @@ export default function Home() {
     setEndpoints(SAMPLE_ENDPOINTS);
     setProjectName("User Management API");
     setProjectDesc("RESTful API for managing user accounts, roles, and permissions");
+  };
+
+  const handleExample = () => {
+    setEndpoints(SAMPLE_TASK_ENDPOINTS);
+    setProjectName("Task Manager API");
+    setProjectDesc("RESTful API for managing tasks with CRUD operations");
+    setDocs(SAMPLE_TASK_DOCS);
+    setShowDocs(true);
   };
 
   const generateDocs = async () => {
@@ -226,10 +393,18 @@ Format as clean Markdown with headers, tables, and code blocks. Use triple backt
       <div className="max-w-7xl mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Panel — Input */}
         <div className="space-y-5">
+          {/* Try Example Button */}
+          <button
+            onClick={handleExample}
+            className="w-full border border-dashed border-[var(--crimson)] hover:border-solid hover:bg-[var(--crimson)]/10 text-[var(--crimson-light)] text-sm font-bold py-3 rounded-lg transition flex items-center justify-center gap-2"
+          >
+            ⚡ Try Example — Task Manager API
+          </button>
+
           {/* Project Info */}
           <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg p-4 glow-red">
             <h2 className="text-sm font-bold text-[var(--crimson-light)] mb-3 flex items-center gap-2">
-              <span className="text-[var(--crimson)]">//</span> PROJECT CONFIG
+              <span className="text-[var(--crimson)]">{"//"}</span> PROJECT CONFIG
             </h2>
             <div className="space-y-3">
               <div>
@@ -258,7 +433,7 @@ Format as clean Markdown with headers, tables, and code blocks. Use triple backt
           {/* Endpoint Builder */}
           <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg p-4 glow-red">
             <h2 className="text-sm font-bold text-[var(--crimson-light)] mb-3 flex items-center gap-2">
-              <span className="text-[var(--crimson)]">//</span> {editId ? "EDIT ENDPOINT" : "ADD ENDPOINT"}
+              <span className="text-[var(--crimson)]">{"//"}</span> {editId ? "EDIT ENDPOINT" : "ADD ENDPOINT"}
             </h2>
 
             <div className="space-y-3">
@@ -394,7 +569,7 @@ Format as clean Markdown with headers, tables, and code blocks. Use triple backt
             <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg p-4">
               <h2 className="text-sm font-bold text-[var(--crimson-light)] mb-3 flex items-center justify-between">
                 <span className="flex items-center gap-2">
-                  <span className="text-[var(--crimson)]">//</span> ENDPOINTS ({endpoints.length})
+                  <span className="text-[var(--crimson)]">{"//"}</span> ENDPOINTS ({endpoints.length})
                 </span>
                 <button
                   onClick={generateDocs}

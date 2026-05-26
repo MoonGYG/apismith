@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const MIMO_API_URL = "http://localhost:19911/v1/chat/completions";
+const MIMO_API_URL = process.env.MIMO_API_URL || "http://localhost:19911/v1/chat/completions";
+const MIMO_API_KEY = process.env.MIMO_API_KEY || "";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,9 +18,16 @@ export async function POST(request: NextRequest) {
 Format everything in clean Markdown with proper headers, tables, and code blocks.`,
     };
 
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (MIMO_API_KEY) {
+      headers["Authorization"] = `Bearer ${MIMO_API_KEY}`;
+    }
+
     const response = await fetch(MIMO_API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({
         model: "mimo-v2.5-pro",
         messages: [systemMessage, { role: "user", content: prompt }],
