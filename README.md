@@ -1,4 +1,5 @@
 # ⚡ APISmith
+\n🚀 **[Live Demo](https://apismith.vercel.app)**
 
 Stop writing API docs by hand. APISmith takes your endpoints — method, path, headers, body, response — and generates full Markdown documentation with curl examples, error codes, and rate limiting info.
 
